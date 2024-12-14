@@ -1,22 +1,23 @@
 #!/bin/bash
 #
-# https://github.com/P3TERX/Actions-OpenWrt
-# File name: diy-part2.sh
-# Description: OpenWrt DIY script part 2 (After Update feeds)
-#
-# Copyright (c) 2019-2024 P3TERX <https://p3terx.com>
+# Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
 #
 # This is free software, licensed under the MIT License.
 # See /LICENSE for more information.
+#
+# https://github.com/P3TERX/Actions-OpenWrt
+# File name: diy-part2.sh
+# Description: OpenWrt DIY script part 2 (After Update feeds)
 #
 
 rm -rf feeds/smpackage/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,ucl,upx,vsftpd*,miniupnpd-iptables,wireless-regdb}
 
 # Modify default IP
-sed -i 's/192.168.1.1/192.168.81.1/g' package/base-files/files/bin/config_generate
+sed -i 's/192.168.1.1/192.168.81.200/g' package/base-files/files/bin/config_generate
+sed -i 's/192.168.1.1/192.168.81.200/g' package/base-files/luci2/bin/config_generate
 
-rm -rf feeds/luci/themes/luci-theme-argon
-git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git feeds/luci/themes/luci-theme-argon
+# rm -rf feeds/luci/themes/luci-theme-argon
+# git clone -b https://github.com/haiibo/openwrt-packages/tree/master/luci-theme-argon.git feeds/luci/themes/luci-theme-argon
 
 # x86 型号只显示 CPU 型号
 sed -i 's/${g}.*/${a}${b}${c}${d}${e}${f}${hydrid}/g' package/lean/autocore/files/x86/autocore
@@ -29,8 +30,5 @@ date_version=$(date +"%y.%m.%d")
 orig_version=$(cat "package/lean/default-settings/files/zzz-default-settings" | grep DISTRIB_REVISION= | awk -F "'" '{print $2}')
 sed -i "s/${orig_version}/R${date_version} by Leran/g" package/lean/default-settings/files/zzz-default-settings
 
-# 修改连接数数
-sed -i 's/net.netfilter.nf_conntrack_max=.*/net.netfilter.nf_conntrack_max=250000/g' package/kernel/linux/files/sysctl-nf-conntrack.conf
-
-#修正连接数
-sed -i '/customized in this file/a net.netfilter.nf_conntrack_max=250000' package/base-files/files/etc/sysctl.conf
+# 最大连接数修改为65535
+sed -i '/customized in this file/a net.netfilter.nf_conntrack_max=65535' package/base-files/files/etc/sysctl.conf
