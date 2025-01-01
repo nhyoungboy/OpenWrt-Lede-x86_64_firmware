@@ -10,14 +10,16 @@
 # Description: OpenWrt DIY script part 2 (After Update feeds)
 #
 
-rm -rf feeds/smpackage/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,ucl,upx,vsftpd*,miniupnpd-iptables,wireless-regdb}
 
-# Modify default IP
-sed -i 's/192.168.1.1/192.168.81.200/g' package/base-files/files/bin/config_generate
-sed -i 's/192.168.1.1/192.168.81.200/g' package/base-files/luci2/bin/config_generate
+# 修复golang版本过低
+git clone https://github.com/sbwml/packages_lang_golang -b 23.x feeds/packages/lang/golang
 
-# rm -rf feeds/luci/themes/luci-theme-argon
-# git clone -b https://github.com/haiibo/openwrt-packages/tree/master/luci-theme-argon.git feeds/luci/themes/luci-theme-argon
+# 修改网络设置
+sed -i 's/192.168.1.1/192.168.81.1/g' package/base-files/files/bin/config_generate
+
+# Change default theme
+sed -i 's#luci-theme-bootstrap#luci-theme-opentomcat#g' feeds/luci/collections/luci/Makefile
+sed -i '/set luci.main.mediaurlbase=\/luci-static\/bootstrap/d' feeds/luci/themes/luci-theme-bootstrap/root/etc/uci-defaults/30_luci-theme-bootstrap
 
 # x86 型号只显示 CPU 型号
 sed -i 's/${g}.*/${a}${b}${c}${d}${e}${f}${hydrid}/g' package/lean/autocore/files/x86/autocore
@@ -28,7 +30,4 @@ sed -i 's/os.date()/os.date("%a %Y-%m-%d %H:%M:%S")/g' package/lean/autocore/fil
 # 修改版本为编译日期
 date_version=$(date +"%y.%m.%d")
 orig_version=$(cat "package/lean/default-settings/files/zzz-default-settings" | grep DISTRIB_REVISION= | awk -F "'" '{print $2}')
-sed -i "s/${orig_version}/R${date_version} by Leran/g" package/lean/default-settings/files/zzz-default-settings
-
-# 最大连接数修改为65535
-sed -i '/customized in this file/a net.netfilter.nf_conntrack_max=65535' package/base-files/files/etc/sysctl.conf
+sed -i "s/${orig_version}/R${date_version} by LERAN/g" package/lean/default-settings/files/zzz-default-settings
