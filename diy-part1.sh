@@ -14,7 +14,6 @@
 git clone https://github.com/nhyoungboy/luci-app-poweroff.git package/luci-app-poweroff
 
 # 2-添加 Mosdns 插件
-rm -rf feeds/packages/lang/golang
 rm -rf feeds/packages/net/mosdns
 rm -rf feeds/luci/applications/luci-app-mosdns
 # git clone https://github.com/sbwml/luci-app-mosdns.git package/lean/luci-app-mosdns
